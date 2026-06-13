@@ -739,6 +739,30 @@
     padding: 12px 12px 8px;
     border-top: 1px solid rgba(255,255,255,0.06);
   }
+  .sidebar-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 12px;
+    padding: 11px 14px;
+    background: rgba(0,102,255,0.12);
+    border: 1.5px solid rgba(0,102,255,0.3);
+    border-radius: var(--radius-sm);
+    color: var(--blue-mid);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    width: calc(100% - 24px);
+  }
+  .sidebar-back-btn:hover {
+    background: rgba(0,102,255,0.22);
+    border-color: var(--blue-primary);
+    color: white;
+    transform: translateX(-2px);
+  }
+  .sidebar-back-btn .s-ico { font-size: 16px; }
   .admin-main {
     flex: 1;
     overflow-y: auto;
@@ -1222,6 +1246,19 @@
     }
     .sidebar-item.active { border-left-color: transparent; border-bottom-color: var(--blue-primary); }
     .sidebar-logo, .sidebar-logout { display: none; }
+    .sidebar-logout { display: flex; padding: 0; border: none; align-items: center; }
+    .sidebar-back-btn {
+      margin: 4px 6px;
+      padding: 10px 12px;
+      font-size: 10px;
+      gap: 4px;
+      width: auto;
+      flex-direction: column;
+      border-radius: 8px;
+      transform: none !important;
+    }
+    .sidebar-back-btn .s-ico { font-size: 14px; }
+
     .admin-main { padding: 14px; }
     .form-grid { grid-template-columns: 1fr; }
     .kpi-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
@@ -1607,6 +1644,9 @@
       </div>
     </div>
     <div class="sidebar-logout">
+      <button class="sidebar-back-btn" onclick="showMobile()" id="btn-back-to-store">
+        <span class="s-ico">🏪</span> Back to Store
+      </button>
       <div class="sidebar-item" onclick="showAdminLogin()" style="color:#FF6B63">
         <span class="s-ico">🚪</span> Logout
       </div>
