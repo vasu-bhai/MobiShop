@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MobiShop — Find Your Perfect Smartphone</title>
+<meta name="description" content="MobiShop – Compare, filter and buy the best smartphones at the lowest prices in India. Featuring iPhone, Samsung, OnePlus, and more.">
+<style>
+  /* ===== DESIGN TOKENS ===== */
+  :root {
+    --blue-primary: #0066FF;
+    --blue-dark: #0047CC;
+    --blue-light: #E8F0FF;
+    --blue-mid: #3385FF;
+    --white: #FFFFFF;
+    --bg: #F5F7FA;
+    --card-bg: #FFFFFF;
+    --text-primary: #0D0D0D;
+    --text-secondary: #5A6475;
+    --text-muted: #9AA3B2;
+    --border: #E8ECF3;
+    --success: #00B96B;
+    --warning: #FF9500;
+    --danger: #FF3B30;
+    --purple: #7C3AED;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 2px 16px rgba(0,102,255,0.08);
+    --shadow-card: 0 4px 24px rgba(0,0,0,0.06);
+    --transition: all 0.22s cubic-bezier(.4,0,.2,1);
+    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== APP SHELL ===== */
+  .app-container {
+    max-width: 430px;
+    margin: 0 auto;
+    background: var(--bg);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    animation: fadeIn .25s ease;
+  }
+  .screen.active { display: flex; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+  /* ===== HEADER ===== */
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(12px);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: var(--blue-primary);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+  .logo-text span { color: var(--blue-primary); }
+  .header-actions { display: flex; gap: 6px; }
+  .icon-btn {
+    width: 38px; height: 38px;
+    border: none;
+    background: var(--bg);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-primary);
+    transition: var(--transition);
+    position: relative;
+  }
+  .icon-btn:hover { background: var(--blue-light); color: var(--blue-primary); }
+  .badge {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 16px; height: 16px;
+    background: var(--danger);
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--white);
+  }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0 8px;
+    cursor: pointer;
+    gap: 4px;
+    border: none;
+    background: none;
+    transition: var(--transition);
+    color: var(--text-muted);
+  }
+  .nav-item.active { color: var(--blue-primary); }
+  .nav-item svg { width: 22px; height: 22px; }
+  .nav-label { font-size: 10px; font-weight: 600; }
+
+  /* ===== SCROLL BODY ===== */
+  .screen-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 80px;
+  }
+  .screen-body::-webkit-scrollbar { display: none; }
+
+  /* ===== HERO ===== */
+  .hero {
+    margin: 16px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #0047CC 0%, #0066FF 50%, #338BFF 100%);
+    padding: 28px 24px 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '📱';
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    font-size: 110px;
+    opacity: 0.12;
+    transform: rotate(-15deg);
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .hero p {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    color: var(--blue-primary);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .hero-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+
+  /* ===== SECTION HEADERS ===== */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 12px;
+    margin-top: 4px;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .see-all {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue-primary);
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  /* ===== FILTER CARDS ===== */
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    padding: 0 16px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-card {
+    flex: 0 0 calc(33.33% - 8px);
+    min-width: 120px;
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px 14px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-card);
+  }
+  .filter-card:hover, .filter-card.active {
+    border-color: var(--blue-primary);
+    background: var(--blue-light);
+    transform: translateY(-2px);
+  }
+  .filter-icon {
+    font-size: 26px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .filter-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .filter-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  /* ===== PHONE CARDS ===== */
+  .products-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 16px;
+  }
+  .phone-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+  }
+  .phone-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,102,255,0.14); }
+  .phone-img-wrap {
+    background: var(--bg);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    position: relative;
+  }
+  .phone-emoji { font-size: 72px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12)); }
+  .wishlist-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 30px; height: 30px;
+    background: white;
+    border-radius: 50%;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: var(--transition);
+  }
+  .wishlist-btn.active { color: var(--danger); }
+  .phone-info { padding: 12px; }
+  .phone-brand {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--blue-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .phone-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .phone-price {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .phone-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+  .stars { color: var(--warning); font-size: 11px; }
+  .view-btn {
+    width: 100%;
+    background: var(--blue-light);
+    color: var(--blue-primary);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .view-btn:hover { background: var(--blue-primary); color: white; }
+
+  /* ===== PHONE DETAILS ===== */
+  .detail-hero {
+    background: var(--bg);
+    padding: 30px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 220px;
+    position: relative;
+  }
+  .detail-emoji { font-size: 130px; filter: drop-shadow(0 8px 20px rgba(0,102,255,0.2)); }
+  .detail-body { padding: 0 16px 16px; background: white; }
+  .brand-badge {
+    display: inline-block;
+    background: var(--blue-light);
+    color: var(--blue-primary);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 16px;
+    margin-bottom: 6px;
+  }
+  .detail-name {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .detail-price {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--blue-primary);
+    margin-bottom: 4px;
+  }
+  .emi-text {
+    font-size: 12px;
+    color: var(--success);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .stock-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #E8FFF3;
+    color: var(--success);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+
+  /* Accordion */
+  .accordion { margin-bottom: 4px; }
+  .accordion-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .accordion-body {
+    display: none;
+    padding-bottom: 14px;
+  }
+  .accordion-body.open { display: block; }
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-key { color: var(--text-secondary); }
+  .spec-val { font-weight: 600; }
+
+  /* Reviews */
+  .review-card {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  .reviewer { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .review-text { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* CTA Buttons */
+  .action-buttons {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: white;
+    border-top: 1px solid var(--border);
+    position: sticky;
+    bottom: 60px;
+  }
+  .btn-primary {
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+  }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-row { display: flex; gap: 10px; }
+  .btn-secondary {
+    flex: 1;
+    background: var(--bg);
+    color: var(--text-primary);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-secondary:hover { border-color: var(--blue-primary); color: var(--blue-primary); }
+
+  /* ===== PROFILE ===== */
+  .profile-header {
+    background: linear-gradient(135deg, #0047CC, #0066FF);
+    padding: 30px 20px 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .avatar {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    border: 3px solid rgba(255,255,255,0.5);
+    flex-shrink: 0;
+  }
+  .profile-name { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+  .profile-detail { font-size: 12px; opacity: 0.8; }
+
+  /* Tabs */
+  .tabs-strip {
+    display: flex;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs-strip::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 0 0 auto;
+    padding: 13px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border: none;
+    background: none;
+    cursor: pointer;
+    white-space: nowrap;
+    position: relative;
+    transition: var(--transition);
+  }
+  .tab-btn.active { color: var(--blue-primary); }
+  .tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--blue-primary);
+    border-radius: 2px 2px 0 0;
+  }
+  .tab-panel { display: none; padding: 16px; }
+  .tab-panel.active { display: block; }
+
+  .order-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+  }
+  .order-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .order-id { font-size: 11px; color: var(--text-muted); }
+  .order-status {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #E8FFF3;
+    color: var(--success);
+  }
+  .order-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .order-price { font-size: 13px; color: var(--blue-primary); font-weight: 700; }
+
+  /* Form */
+  .form-group { margin-bottom: 14px; }
+  .form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-secondary); }
+  .form-input, .form-textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    transition: var(--transition);
+    outline: none;
+    resize: none;
+  }
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--blue-primary);
+    background: var(--blue-light);
+  }
+  .form-textarea { min-height: 90px; }
+
+  /* ===== ADMIN LOGIN ===== */
+  .admin-login-screen {
+    min-height: 100vh;
+    background: #0F1117;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cyber-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,102,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,102,255,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+  .cyber-glow {
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,102,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .login-card {
+    background: #1A1D26;
+    border: 1px solid rgba(0,102,255,0.25);
+    border-radius: 20px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 380px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 60px rgba(0,102,255,0.12);
+  }
+  .login-icon {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, #0047CC, #0066FF);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 16px;
+    box-shadow: 0 0 30px rgba(0,102,255,0.4);
+  }
+  .login-title {
+    color: white;
+    font-size: 22px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .login-subtitle {
+    color: rgba(255,255,255,0.45);
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 26px;
+  }
+  .dark-input {
+    width: 100%;
+    background: #252833;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-sm);
+    padding: 13px 16px;
+    font-size: 14px;
+    color: white;
+    font-family: var(--font);
+    outline: none;
+    transition: var(--transition);
+    margin-bottom: 12px;
+  }
+  .dark-input:focus { border-color: var(--blue-primary); background: #2D3142; }
+  .dark-input::placeholder { color: rgba(255,255,255,0.3); }
+
+  /* ===== ADMIN DASHBOARD ===== */
+  .admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #0F1117;
+    color: #E2E8F0;
+    font-family: var(--font);
+  }
+  .admin-sidebar {
+    width: 220px;
+    background: #1A1D26;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    flex-shrink: 0;
+  }
+  .sidebar-logo {
+    padding: 8px 20px 22px;
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -0.3px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sidebar-logo span { color: var(--blue-mid); }
+  .sidebar-logo .s-icon {
+    width: 28px; height: 28px;
+    background: var(--blue-primary);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .nav-group { flex: 1; }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: var(--transition);
+    border-left: 3px solid transparent;
+  }
+  .sidebar-item:hover { color: white; background: rgba(255,255,255,0.04); }
+  .sidebar-item.active {
+    color: white;
+    background: rgba(0,102,255,0.12);
+    border-left-color: var(--blue-primary);
+  }
+  .sidebar-item .s-ico { font-size: 16px; width: 20px; text-align: center; }
+  .sidebar-logout {
+    padding: 12px 12px 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .admin-main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+  .admin-main::-webkit-scrollbar { width: 6px; }
+  .admin-main::-webkit-scrollbar-track { background: transparent; }
+  .admin-main::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+  .admin-page { display: none; }
+  .admin-page.active { display: block; }
+
+  .page-heading {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+  .page-subhead {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 24px;
+  }
+
+  /* KPI Cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .kpi-card {
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::after {
+    content: attr(data-icon);
+    position: absolute;
+    right: 12px; bottom: 10px;
+    font-size: 38px;
+    opacity: 0.15;
+  }
+  .kpi-card.blue { background: linear-gradient(135deg,#0047CC,#0066FF); }
+  .kpi-card.green { background: linear-gradient(135deg,#007A42,#00B96B); }
+  .kpi-card.orange { background: linear-gradient(135deg,#B36200,#FF9500); }
+  .kpi-card.purple { background: linear-gradient(135deg,#5B21B6,#7C3AED); }
+  .kpi-card.red { background: linear-gradient(135deg,#B91C1C,#EF4444); }
+  .kpi-label { font-size: 11px; font-weight: 700; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; color: white; margin-bottom: 6px; }
+  .kpi-value { font-size: 28px; font-weight: 800; color: white; letter-spacing: -1px; }
+
+  /* Admin Table */
+  .admin-table-wrap {
+    background: #1A1D26;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .table-title { font-size: 15px; font-weight: 700; color: white; }
+  .btn-add {
+    background: var(--blue-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .btn-add:hover { background: var(--blue-dark); }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(255,255,255,0.02);
+  }
+  td {
+    padding: 13px 16px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .td-actions { display: flex; gap: 6px; }
+  .act-btn {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+  }
+  .act-edit { background: rgba(0,102,255,0.15); color: var(--blue-mid); }
+  .act-edit:hover { background: rgba(0,102,255,0.3); }
+  .act-del { background: rgba(255,59,48,0.12); color: #FF6B63; }
+  .act-del:hover { background: rgba(255,59,48,0.25); }
+  .stock-tag-sm {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .stock-ok { background: rgba(0,185,107,0.15); color: #00D47E; }
+  .stock-low { background: rgba(255,149,0,0.15); color: #FFAD38; }
+
+  /* Add Phone Form */
+  .admin-form-card {
+    background: #1A1D26;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+  .admin-form-title { font-size: 15px; font-weight: 700; color: white; margin-bottom: 18px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-grid .full-width { grid-column: 1/-1; }
+  .dark-label { display: block; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.45); margin-bottom: 6px; }
+  .dark-field {
+    width: 100%;
+    background: #252833;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-sm);
+    padding: 11px 13px;
+    font-size: 13px;
+    color: white;
+    font-family: var(--font);
+    outline: none;
+    transition: var(--transition);
+    resize: none;
+  }
+  .dark-field:focus { border-color: var(--blue-primary); }
+  .dark-field::placeholder { color: rgba(255,255,255,0.2); }
+  select.dark-field option { background: #252833; }
+  .upload-zone {
+    border: 2px dashed rgba(0,102,255,0.3);
+    border-radius: var(--radius);
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-bottom: 16px;
+  }
+  .upload-zone:hover { border-color: var(--blue-primary); background: rgba(0,102,255,0.05); }
+  .upload-icon { font-size: 36px; margin-bottom: 8px; }
+  .upload-text { font-size: 13px; color: rgba(255,255,255,0.5); }
+  .upload-text strong { color: var(--blue-mid); }
+
+  /* User Management */
+  .user-row-img {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: rgba(0,102,255,0.15);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .status-active { color: #00D47E; font-weight: 700; }
+  .status-suspended { color: #FF6B63; font-weight: 700; }
+
+  /* SMS Campaign */
+  .sms-card {
+    background: #1A1D26;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .sms-types {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .sms-type-btn {
+    background: #252833;
+    border: 1.5px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius-sm);
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .sms-type-btn .t-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+  .sms-type-btn:hover, .sms-type-btn.active {
+    border-color: var(--blue-primary);
+    background: rgba(0,102,255,0.1);
+    color: white;
+  }
+  .campaign-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .campaign-stat:last-child { border-bottom: none; }
+  .c-stat-label { font-size: 13px; color: rgba(255,255,255,0.5); }
+  .c-stat-val { font-size: 20px; font-weight: 800; color: white; }
+
+  /* Analytics */
+  .chart-card {
+    background: #1A1D26;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .chart-title { font-size: 14px; font-weight: 700; color: white; margin-bottom: 16px; }
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-item {}
+  .bar-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px; display: flex; justify-content: space-between; }
+  .bar-track { height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .bar-fill.blue { background: linear-gradient(90deg,#0047CC,#0066FF); }
+  .bar-fill.green { background: linear-gradient(90deg,#007A42,#00B96B); }
+  .bar-fill.orange { background: linear-gradient(90deg,#B36200,#FF9500); }
+  .donut-wrap { display: flex; align-items: center; gap: 20px; }
+  .donut-svg { flex-shrink: 0; }
+  .donut-legend { flex: 1; }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .revenue-line {
+    display: grid;
+    grid-template-columns: repeat(7,1fr);
+    gap: 6px;
+    align-items: flex-end;
+    height: 80px;
+  }
+  .rev-bar {
+    border-radius: 4px 4px 0 0;
+    background: linear-gradient(180deg,#0066FF,#0047CC);
+    min-height: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .rev-bar:hover { opacity: 0.75; }
+  .rev-labels {
+    display: grid;
+    grid-template-columns: repeat(7,1fr);
+    gap: 6px;
+    margin-top: 6px;
+    text-align: center;
+  }
+  .rev-label { font-size: 10px; color: rgba(255,255,255,0.35); }
+
+  /* Settings */
+  .settings-section {
+    background: #1A1D26;
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .settings-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255,255,255,0.35);
+    padding: 14px 18px 10px;
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .settings-row:hover { background: rgba(255,255,255,0.02); }
+  .settings-row-left { display: flex; align-items: center; gap: 12px; }
+  .s-row-icon {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .s-row-icon.blue { background: rgba(0,102,255,0.15); }
+  .s-row-icon.green { background: rgba(0,185,107,0.15); }
+  .s-row-icon.orange { background: rgba(255,149,0,0.15); }
+  .s-row-icon.red { background: rgba(255,59,48,0.15); }
+  .s-row-icon.purple { background: rgba(124,58,237,0.15); }
+  .settings-row-label { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.85); }
+  .settings-row-desc { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+  .toggle {
+    width: 44px; height: 26px;
+    border-radius: 13px;
+    background: rgba(255,255,255,0.1);
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition);
+    flex-shrink: 0;
+    border: none;
+  }
+  .toggle.on { background: var(--blue-primary); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: white;
+    top: 3px; left: 3px;
+    transition: var(--transition);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .toggle.on::after { transform: translateX(18px); }
+  .settings-arrow { color: rgba(255,255,255,0.2); font-size: 16px; }
+
+  /* ===== BACK BUTTON ===== */
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--blue-primary);
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 4px 0;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: #1A1D26;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 24px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: fadeIn .2s ease;
+  }
+  .modal-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-close {
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.08);
+    border: none;
+    border-radius: 50%;
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 90px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1A1D26;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    transition: all .3s ease;
+    z-index: 9999;
+    pointer-events: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    white-space: nowrap;
+    max-width: 90vw;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Misc */
+  .divider { height: 1px; background: var(--border); margin: 8px 0; }
+  .address-card {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+  }
+  .address-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .address-text { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* Admin entry link */
+  .admin-entry-link {
+    position: fixed;
+    bottom: 14px;
+    right: 14px;
+    background: #1A1D26;
+    color: rgba(255,255,255,0.45);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 300;
+    transition: var(--transition);
+  }
+  .admin-entry-link:hover { color: white; border-color: rgba(0,102,255,0.4); background: rgba(0,102,255,0.1); }
+
+  /* ===== RESPONSIVE ===== */
+  @media(min-width: 768px) {
+    .admin-sidebar { width: 240px; }
+    .kpi-grid { grid-template-columns: repeat(5,1fr); }
+  }
+  @media(max-width: 600px) {
+    .admin-layout { flex-direction: column; }
+    .admin-sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-direction: row;
+      padding: 0;
+      overflow-x: auto;
+    }
+    .nav-group { display: flex; flex-direction: row; }
+    .sidebar-item {
+      padding: 12px 14px;
+      flex-direction: column;
+      gap: 3px;
+      border-left: none;
+      border-bottom: 3px solid transparent;
+      font-size: 10px;
+    }
+    .sidebar-item.active { border-left-color: transparent; border-bottom-color: var(--blue-primary); }
+    .sidebar-logo, .sidebar-logout { display: none; }
+    .admin-main { padding: 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .sms-types { grid-template-columns: repeat(3,1fr); }
+    table { font-size: 11px; }
+    th, td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== MOBILE APP ==================== -->
+<div class="app-container" id="mobileApp">
+
+  <!-- ====== SCREEN 1: HOME ====== -->
+  <div class="screen active" id="screen-home">
+    <header class="app-header">
+      <a class="logo" href="#">
+        <div class="logo-icon">📱</div>
+        <div class="logo-text">Mobi<span>Shop</span></div>
+      </a>
+      <div class="header-actions">
+        <button class="icon-btn" id="btn-search" onclick="showToast('🔍 Search opened')">🔍</button>
+        <button class="icon-btn" id="btn-cart" onclick="showToast('🛒 Cart opened')">
+          🛒<span class="badge" id="cartBadge">3</span>
+        </button>
+        <button class="icon-btn" id="btn-notif" onclick="showToast('🔔 Notifications')">🔔<span class="badge">2</span></button>
+      </div>
+    </header>
+
+    <div class="screen-body">
+      <!-- Hero -->
+      <div class="hero">
+        <span class="hero-tag">✨ New Arrivals 2025</span>
+        <h1>Find Your Perfect Smartphone</h1>
+        <p>Compare, Filter &amp; Buy the Best Phones at the Lowest Prices</p>
+        <button class="hero-btn" onclick="setFilter('all')">Explore Phones →</button>
+      </div>
+
+      <!-- Quick Filters -->
+      <div class="section-header" style="padding-top:20px">
+        <span class="section-title">Quick Filters</span>
+      </div>
+      <div class="filter-row">
+        <div class="filter-card" id="filter-budget" onclick="applyFilter('budget')">
+          <span class="filter-icon">💰</span>
+          <div class="filter-name">Budget</div>
+          <div class="filter-desc">Under ₹15k · ₹15–30k · ₹30–60k · ₹60k+</div>
+        </div>
+        <div class="filter-card" id="filter-iphone" onclick="applyFilter('iphone')">
+          <span class="filter-icon">🍎</span>
+          <div class="filter-name">iPhone</div>
+          <div class="filter-desc">Browse all Apple devices</div>
+        </div>
+        <div class="filter-card" id="filter-android" onclick="applyFilter('android')">
+          <span class="filter-icon">🤖</span>
+          <div class="filter-name">Android</div>
+          <div class="filter-desc">Browse Android devices</div>
+        </div>
+        <div class="filter-card" id="filter-5g" onclick="applyFilter('5g')">
+          <span class="filter-icon">⚡</span>
+          <div class="filter-name">5G</div>
+          <div class="filter-desc">All 5G-ready phones</div>
+        </div>
+        <div class="filter-card" id="filter-foldable" onclick="applyFilter('foldable')">
+          <span class="filter-icon">🔀</span>
+          <div class="filter-name">Foldable</div>
+          <div class="filter-desc">Flip &amp; Fold devices</div>
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div class="section-header" style="padding-top:22px">
+        <span class="section-title">Featured Phones</span>
+        <button class="see-all" onclick="setFilter('all')">See All</button>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+
+      <div style="height:16px"></div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" id="nav-home-0" onclick="switchNav(0)">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span class="nav-label">Home</span>
+      </button>
+      <button class="nav-item" id="nav-home-1" onclick="switchNav(1)">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+        <span class="nav-label">Categories</span>
+      </button>
+      <button class="nav-item" id="nav-home-2" onclick="switchNav(2)">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM16 10a4 4 0 01-8 0"/></svg>
+        <span class="nav-label">Cart</span>
+      </button>
+      <button class="nav-item" id="nav-home-3" onclick="goProfile()">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        <span class="nav-label">Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ====== SCREEN 2: PHONE DETAILS ====== -->
+  <div class="screen" id="screen-detail">
+    <header class="app-header">
+      <button class="back-btn" onclick="goBack('home')">← Back</button>
+      <div class="header-actions">
+        <button class="icon-btn" id="detail-wish-btn" onclick="showToast('Added to Wishlist ❤️')">🤍</button>
+        <button class="icon-btn" id="detail-cart-btn" onclick="addToCart()">🛒</button>
+      </div>
+    </header>
+    <div class="screen-body" id="detailContent"></div>
+    <nav class="bottom-nav">
+      <button class="nav-item" onclick="goBack('home')">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span class="nav-label">Home</span>
+      </button>
+      <button class="nav-item" onclick="switchNav(1)">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+        <span class="nav-label">Categories</span>
+      </button>
+      <button class="nav-item active" onclick="switchNav(2)">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM16 10a4 4 0 01-8 0"/></svg>
+        <span class="nav-label">Cart</span>
+      </button>
+      <button class="nav-item" onclick="goProfile()">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        <span class="nav-label">Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ====== SCREEN 3: USER PROFILE ====== -->
+  <div class="screen" id="screen-profile">
+    <header class="app-header">
+      <button class="back-btn" onclick="goBack('home')">← Back</button>
+      <button class="icon-btn" onclick="showToast('⚙️ Settings opened')">⚙️</button>
+    </header>
+    <div class="screen-body">
+      <div class="profile-header">
+        <div class="avatar">👤</div>
+        <div>
+          <div class="profile-name">Aryan Mehta</div>
+          <div class="profile-detail">+91 98765 43210</div>
+          <div class="profile-detail">aryan.mehta@gmail.com</div>
+        </div>
+      </div>
+
+      <div class="tabs-strip">
+        <button class="tab-btn active" onclick="switchTab(this,'tab-orders')">📦 Orders</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-wishlist')">❤️ Wishlist</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-address')">📍 Addresses</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-sms')">💬 SMS Alerts</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-smssend')">📤 SMS Center</button>
+      </div>
+
+      <!-- Orders -->
+      <div class="tab-panel active" id="tab-orders">
+        <div class="order-card">
+          <div class="order-top">
+            <span class="order-id">#MS-2025-00182</span>
+            <span class="order-status">✓ Delivered</span>
+          </div>
+          <div class="order-name">iPhone 16 Pro Max</div>
+          <div class="order-price">₹1,34,900 · 12 Jun 2025</div>
+        </div>
+        <div class="order-card">
+          <div class="order-top">
+            <span class="order-id">#MS-2025-00147</span>
+            <span class="order-status" style="background:#FFF3E0;color:#E65100;">⏳ In Transit</span>
+          </div>
+          <div class="order-name">Samsung Galaxy S24 Ultra</div>
+          <div class="order-price">₹1,24,999 · 10 Jun 2025</div>
+        </div>
+        <div class="order-card">
+          <div class="order-top">
+            <span class="order-id">#MS-2025-00112</span>
+            <span class="order-status">✓ Delivered</span>
+          </div>
+          <div class="order-name">OnePlus 12 Pro</div>
+          <div class="order-price">₹64,999 · 28 May 2025</div>
+        </div>
+        <div class="order-card">
+          <div class="order-top">
+            <span class="order-id">#MS-2025-00098</span>
+            <span class="order-status" style="background:#F0E8FF;color:#7C3AED;">📦 Processing</span>
+          </div>
+          <div class="order-name">Google Pixel 9 Pro</div>
+          <div class="order-price">₹1,09,999 · 18 May 2025</div>
+        </div>
+      </div>
+
+      <!-- Wishlist -->
+      <div class="tab-panel" id="tab-wishlist">
+        <div class="products-grid" id="wishlistGrid"></div>
+      </div>
+
+      <!-- Addresses -->
+      <div class="tab-panel" id="tab-address">
+        <div class="address-card">
+          <div class="address-title">🏠 Home</div>
+          <div class="address-text">42, Vastrapur Lake Road, Near D-Mart, Vastrapur, Ahmedabad - 380015, Gujarat</div>
+        </div>
+        <div class="address-card">
+          <div class="address-title">💼 Office</div>
+          <div class="address-text">Torrent I-Rise, SG Highway, Bodakdev, Ahmedabad - 380054, Gujarat</div>
+        </div>
+        <button class="btn-primary" style="margin-top:8px" onclick="showToast('➕ Add address coming soon')">+ Add New Address</button>
+      </div>
+
+      <!-- SMS Alerts -->
+      <div class="tab-panel" id="tab-sms">
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">Active price-drop &amp; offer alerts:</p>
+        <div class="order-card">
+          <div class="order-name">📉 iPhone 17 Pro — Price Drop Alert</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Target: Below ₹1,10,000</div>
+        </div>
+        <div class="order-card">
+          <div class="order-name">🎉 Samsung S25 — Launch Alert</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Notify me on launch</div>
+        </div>
+        <div class="order-card">
+          <div class="order-name">📦 OnePlus 13 — Restock Alert</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Out of stock — notify on restock</div>
+        </div>
+      </div>
+
+      <!-- SMS Center -->
+      <div class="tab-panel" id="tab-smssend">
+        <div class="form-group">
+          <label class="form-label">Recipient Number</label>
+          <input class="form-input" type="tel" id="sms-recipient" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" id="sms-msg" placeholder="Type your message here..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="sendSMS()">📤 Send SMS</button>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" onclick="goBack('home')">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span class="nav-label">Home</span>
+      </button>
+      <button class="nav-item" onclick="switchNav(1)">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+        <span class="nav-label">Categories</span>
+      </button>
+      <button class="nav-item" onclick="switchNav(2)">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM16 10a4 4 0 01-8 0"/></svg>
+        <span class="nav-label">Cart</span>
+      </button>
+      <button class="nav-item active">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        <span class="nav-label">Profile</span>
+      </button>
+    </nav>
+  </div>
+
+</div><!-- /.app-container -->
+
+<!-- Admin Entry Button (visible on mobile app) -->
+<button class="admin-entry-link" onclick="showAdminLogin()">🔐 Admin</button>
+
+<!-- ==================== ADMIN SECTION ==================== -->
+
+<!-- SCREEN 4: ADMIN LOGIN -->
+<div class="admin-login-screen" id="screen-admin-login" style="display:none;">
+  <div class="cyber-grid"></div>
+  <div class="cyber-glow"></div>
+  <div class="login-card">
+    <div class="login-icon">🔐</div>
+    <div class="login-title">Admin Access</div>
+    <div class="login-subtitle">Secure restricted area — MobiShop Admin Panel</div>
+    <input class="dark-input" id="admin-email" type="email" placeholder="admin@mobishop.in" value="admin@mobishop.in">
+    <input class="dark-input" id="admin-pass" type="password" placeholder="••••••••" value="password">
+    <button class="btn-primary" onclick="goAdminDash()" style="margin-top:4px">🔓 Login as Admin</button>
+    <div style="margin-top:16px;text-align:center;font-size:12px;color:rgba(255,255,255,0.25)">
+      🛡️ All sessions are encrypted &amp; monitored
+    </div>
+  </div>
+  <div style="margin-top:20px;text-align:center;">
+    <button onclick="showMobile()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:13px;cursor:pointer">← Back to MobiShop</button>
+  </div>
+</div>
+
+<!-- SCREEN 5–9: ADMIN DASHBOARD -->
+<div class="admin-layout" id="screen-admin-dash" style="display:none;">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">
+      <div class="s-icon">📱</div>
+      Mobi<span>Shop</span>
+    </div>
+    <div class="nav-group">
+      <div class="sidebar-item active" id="si-dashboard" onclick="adminPage('dashboard',this)">
+        <span class="s-ico">📊</span> Dashboard
+      </div>
+      <div class="sidebar-item" id="si-phones" onclick="adminPage('phones',this)">
+        <span class="s-ico">📱</span> Phones
+      </div>
+      <div class="sidebar-item" id="si-users" onclick="adminPage('users',this)">
+        <span class="s-ico">👥</span> Users
+      </div>
+      <div class="sidebar-item" id="si-sms" onclick="adminPage('sms',this)">
+        <span class="s-ico">💬</span> SMS Campaigns
+      </div>
+      <div class="sidebar-item" id="si-analytics" onclick="adminPage('analytics',this)">
+        <span class="s-ico">📈</span> Analytics
+      </div>
+      <div class="sidebar-item" id="si-settings" onclick="adminPage('settings',this)">
+        <span class="s-ico">⚙️</span> Settings
+      </div>
+    </div>
+    <div class="sidebar-logout">
+      <div class="sidebar-item" onclick="showAdminLogin()" style="color:#FF6B63">
+        <span class="s-ico">🚪</span> Logout
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+
+    <!-- PAGE: DASHBOARD -->
+    <div class="admin-page active" id="admin-dashboard">
+      <div class="page-heading">Dashboard Overview</div>
+      <div class="page-subhead">Welcome back, Admin · Last updated: just now</div>
+      <div class="kpi-grid">
+        <div class="kpi-card blue" data-icon="📱">
+          <div class="kpi-label">Total Phones</div>
+          <div class="kpi-value" id="kpi-phones">148</div>
+        </div>
+        <div class="kpi-card green" data-icon="👥">
+          <div class="kpi-label">Total Users</div>
+          <div class="kpi-value">12,440</div>
+        </div>
+        <div class="kpi-card orange" data-icon="🛒">
+          <div class="kpi-label">Orders Today</div>
+          <div class="kpi-value">284</div>
+        </div>
+        <div class="kpi-card purple" data-icon="💬">
+          <div class="kpi-label">SMS Sent</div>
+          <div class="kpi-value">8,932</div>
+        </div>
+        <div class="kpi-card red" data-icon="💰">
+          <div class="kpi-label">Revenue Today</div>
+          <div class="kpi-value">₹42L</div>
+        </div>
+      </div>
+
+      <div class="admin-table-wrap">
+        <div class="table-header">
+          <span class="table-title">Recent Inventory</span>
+          <button class="btn-add" onclick="adminPage('phones',document.getElementById('si-phones'))">+ Add Phone</button>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Phone</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="dashTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: PHONES -->
+    <div class="admin-page" id="admin-phones">
+      <div class="page-heading">Phone Management</div>
+      <div class="page-subhead">Add, edit, delete and manage all phone listings</div>
+
+      <div class="admin-form-card">
+        <div class="admin-form-title">➕ Add / Edit Phone</div>
+        <div class="upload-zone" onclick="showToast('📂 Image upload triggered')">
+          <div class="upload-icon">📂</div>
+          <div class="upload-text"><strong>Drag &amp; drop images</strong> or click to upload<br><span style="font-size:11px">Supports PNG, JPG, WEBP · Max 5MB</span></div>
+        </div>
+        <div class="form-grid">
+          <div>
+            <label class="dark-label">Phone Name</label>
+            <input class="dark-field" id="af-name" type="text" placeholder="iPhone 16 Pro Max">
+          </div>
+          <div>
+            <label class="dark-label">Brand</label>
+            <input class="dark-field" id="af-brand" type="text" placeholder="Apple">
+          </div>
+          <div>
+            <label class="dark-label">Category</label>
+            <select class="dark-field" id="af-cat">
+              <option>iPhone</option>
+              <option>Android</option>
+              <option>Foldable</option>
+              <option>Budget</option>
+            </select>
+          </div>
+          <div>
+            <label class="dark-label">Price (₹)</label>
+            <input class="dark-field" id="af-price" type="number" placeholder="134900">
+          </div>
+          <div>
+            <label class="dark-label">RAM</label>
+            <input class="dark-field" id="af-ram" type="text" placeholder="8GB">
+          </div>
+          <div>
+            <label class="dark-label">Storage</label>
+            <input class="dark-field" id="af-storage" type="text" placeholder="256GB">
+          </div>
+          <div>
+            <label class="dark-label">Camera</label>
+            <input class="dark-field" id="af-cam" type="text" placeholder="48MP + 12MP + 12MP">
+          </div>
+          <div>
+            <label class="dark-label">Battery</label>
+            <input class="dark-field" id="af-bat" type="text" placeholder="4422 mAh">
+          </div>
+          <div>
+            <label class="dark-label">Stock Quantity</label>
+            <input class="dark-field" id="af-stock" type="number" placeholder="50">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding-top:18px">
+            <input type="checkbox" id="af-featured" style="accent-color:var(--blue-primary);width:16px;height:16px">
+            <label for="af-featured" style="font-size:13px;color:rgba(255,255,255,0.6)">Mark as Featured</label>
+          </div>
+          <div class="full-width">
+            <label class="dark-label">Description</label>
+            <textarea class="dark-field" id="af-desc" rows="3" placeholder="Enter phone description..."></textarea>
+          </div>
+        </div>
+        <button class="btn-primary" style="margin-top:14px;max-width:200px" onclick="adminPublishPhone()">🚀 Publish Phone</button>
+      </div>
+
+      <div class="admin-table-wrap">
+        <div class="table-header">
+          <span class="table-title">All Phones</span>
+          <span style="font-size:12px;color:rgba(255,255,255,0.35)" id="phonesCount">148 listings</span>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Phone</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="phonesTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: USERS -->
+    <div class="admin-page" id="admin-users">
+      <div class="page-heading">User Management</div>
+      <div class="page-subhead">View, manage and control all registered users</div>
+      <div class="admin-table-wrap">
+        <div class="table-header">
+          <span class="table-title">All Users</span>
+          <span style="font-size:12px;color:rgba(255,255,255,0.35)">12,440 registered</span>
+        </div>
+        <table>
+          <thead>
+            <tr><th>User</th><th>Phone</th><th>Orders</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: SMS CAMPAIGNS -->
+    <div class="admin-page" id="admin-sms">
+      <div class="page-heading">SMS Campaigns</div>
+      <div class="page-subhead">Send targeted SMS campaigns to your users</div>
+
+      <div class="sms-card">
+        <div class="admin-form-title" style="margin-bottom:14px">📣 Campaign Type</div>
+        <div class="sms-types">
+          <div class="sms-type-btn active" id="sms-t-promo" onclick="selectSmsType(this)">
+            <span class="t-icon">🎉</span>Promotional
+          </div>
+          <div class="sms-type-btn" id="sms-t-alert" onclick="selectSmsType(this)">
+            <span class="t-icon">📉</span>Price Alert
+          </div>
+          <div class="sms-type-btn" id="sms-t-launch" onclick="selectSmsType(this)">
+            <span class="t-icon">🚀</span>Launch
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <label class="dark-label">Target Audience</label>
+          <select class="dark-field">
+            <option>All Users (12,440)</option>
+            <option>Recent Buyers (3,280)</option>
+            <option>Wishlist Users (4,910)</option>
+            <option>Inactive Users (2,100)</option>
+          </select>
+        </div>
+        <div style="margin-bottom:12px">
+          <label class="dark-label">Message Template</label>
+          <textarea class="dark-field" rows="4" id="sms-campaign-msg" placeholder="Hi {name}! 🎉 Exclusive deal on {phone}...">Hi {name}! 🎉 Exclusive offer — Get {phone} at just ₹{price}. Limited stock! Shop now at MobiShop: mobishop.in/deal · Reply STOP to unsubscribe.</textarea>
+        </div>
+        <div style="margin-bottom:16px">
+          <label class="dark-label">Schedule</label>
+          <input class="dark-field" type="datetime-local">
+        </div>
+        <button class="btn-primary" style="max-width:220px" onclick="showToast('📤 Campaign Scheduled!')">📤 Send Campaign</button>
+      </div>
+
+      <div class="sms-card">
+        <div class="chart-title">📊 Campaign Stats (Last 30 Days)</div>
+        <div class="campaign-stat">
+          <span class="c-stat-label">Total SMS Sent</span>
+          <span class="c-stat-val">8,932</span>
+        </div>
+        <div class="campaign-stat">
+          <span class="c-stat-label">Delivery Rate</span>
+          <span class="c-stat-val" style="color:#00D47E">96.4%</span>
+        </div>
+        <div class="campaign-stat">
+          <span class="c-stat-label">Click-Through Rate</span>
+          <span class="c-stat-val" style="color:#FFAD38">18.2%</span>
+        </div>
+        <div class="campaign-stat">
+          <span class="c-stat-label">Conversions</span>
+          <span class="c-stat-val">1,624</span>
+        </div>
+        <div class="campaign-stat">
+          <span class="c-stat-label">Revenue from SMS</span>
+          <span class="c-stat-val" style="color:#7C85FF">₹18.4L</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: ANALYTICS -->
+    <div class="admin-page" id="admin-analytics">
+      <div class="page-heading">Analytics</div>
+      <div class="page-subhead">Insights, revenue trends and performance metrics</div>
+
+      <!-- Revenue Bar -->
+      <div class="chart-card">
+        <div class="chart-title">📅 Weekly Revenue (₹ Lakhs)</div>
+        <div class="revenue-line" id="revenueChart"></div>
+        <div class="rev-labels" id="revenueLabels"></div>
+      </div>
+
+      <!-- Top Brands Bar Chart -->
+      <div class="chart-card">
+        <div class="chart-title">🏆 Sales by Brand</div>
+        <div class="bar-chart">
+          <div class="bar-item">
+            <div class="bar-label"><span>Apple</span><span>38%</span></div>
+            <div class="bar-track"><div class="bar-fill blue" style="width:38%"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label"><span>Samsung</span><span>27%</span></div>
+            <div class="bar-track"><div class="bar-fill green" style="width:27%"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label"><span>OnePlus</span><span>14%</span></div>
+            <div class="bar-track"><div class="bar-fill orange" style="width:14%"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label"><span>Google</span><span>11%</span></div>
+            <div class="bar-track"><div class="bar-fill blue" style="width:11%"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label"><span>Others</span><span>10%</span></div>
+            <div class="bar-track"><div class="bar-fill green" style="width:10%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Donut Chart -->
+      <div class="chart-card">
+        <div class="chart-title">🔵 Orders by Category</div>
+        <div class="donut-wrap">
+          <svg class="donut-svg" width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#0066FF" stroke-width="20"
+              stroke-dasharray="150 102" stroke-dashoffset="0"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#00B96B" stroke-width="20"
+              stroke-dasharray="70 182" stroke-dashoffset="-150"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#FF9500" stroke-width="20"
+              stroke-dasharray="40 212" stroke-dashoffset="-220"/>
+            <circle cx="55" cy="55" r="40" fill="none" stroke="#7C3AED" stroke-width="20"
+              stroke-dasharray="252" stroke-dashoffset="0" opacity="0"/>
+          </svg>
+          <div class="donut-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#0066FF"></div>iPhone — 59%</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#00B96B"></div>Android — 28%</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#FF9500"></div>Foldable — 13%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: SETTINGS -->
+    <div class="admin-page" id="admin-settings">
+      <div class="page-heading">Settings</div>
+      <div class="page-subhead">Configure your MobiShop admin preferences</div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">General</div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="s-row-icon blue">🏪</div>
+            <div>
+              <div class="settings-row-label">Store Name</div>
+              <div class="settings-row-desc">MobiShop India Pvt. Ltd.</div>
+            </div>
+          </div>
+          <span class="settings-arrow">›</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="s-row-icon green">💱</div>
+            <div>
+              <div class="settings-row-label">Currency</div>
+              <div class="settings-row-desc">Indian Rupee (₹)</div>
+            </div>
+          </div>
+          <span class="settings-arrow">›</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="s-row-icon orange">🌐</div>
+            <div>
+              <div class="settings-row-label">Language</div>
+              <div class="settings-row-desc">English (India)</div>
+            </div>
+          </div>
+          <span class="settings-arrow">›</span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Notifications</div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="s-row-icon blue">📧</div>
+            <div>
+              <div class="settings-row-label">Email Alerts</div>
+              <div class="settings-row-desc">New orders, stock alerts</div>
+            </div>
+          </div>
+          <button class="toggle on" id="toggle-email" onclick="toggleSetting(this)"></button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="s-row-icon purple">💬</div>
+            <div>
+              <div class="settings-row-label">SMS Notifications</div>
+              <div class="settings-row-desc">Campaign delivery reports</div>
+            </div>
+          </div>
+          <button class="toggle on" id="toggle-sms" onclick="toggleSetting(this)"></button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="s-row-icon green">🔔</div>
+            <div>
+              <div class="settings-row-label">Push Notifications</div>
+              <div class="settings-row-desc">Real-time admin alerts</div>
+            </div>
+          </div>
+          <button class="toggle" id="toggle-push" onclick="toggleSetting(this)"></button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Security</div>
+        <div class="settings-row" onclick="showToast('🔑 Change password opened')">
+          <div class="settings-row-left">
+            <div class="s-row-icon orange">🔑</div>
+            <div>
+              <div class="settings-row-label">Change Password</div>
+              <div class="settings-row-desc">Last changed 30 days ago</div>
+            </div>
+          </div>
+          <span class="settings-arrow">›</span>
+        </div>
+        <div class="settings-row" onclick="showToast('🛡️ 2FA setup opened')">
+          <div class="settings-row-left">
+            <div class="s-row-icon green">🛡️</div>
+            <div>
+              <div class="settings-row-label">Two-Factor Auth</div>
+              <div class="settings-row-desc">Extra login security</div>
+            </div>
+          </div>
+          <button class="toggle on" onclick="event.stopPropagation();toggleSetting(this)"></button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Danger Zone</div>
+        <div class="settings-row" onclick="showToast('⚠️ This action is irreversible!')">
+          <div class="settings-row-left">
+            <div class="s-row-icon red">🗑️</div>
+            <div>
+              <div class="settings-row-label" style="color:#FF6B63">Clear All Data</div>
+              <div class="settings-row-desc">Wipe all listings and users</div>
+            </div>
+          </div>
+          <span class="settings-arrow" style="color:#FF6B63">›</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== MODAL: ADD PHONE (from dashboard) ===== -->
+<div class="modal-overlay" id="addPhoneModal">
+  <div class="modal-box">
+    <div class="modal-title">
+      ➕ Quick Add Phone
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div style="margin-bottom:12px">
+      <label class="dark-label">Phone Name</label>
+      <input class="dark-field" id="m-name" type="text" placeholder="e.g. Pixel 9 Pro">
+    </div>
+    <div style="margin-bottom:12px">
+      <label class="dark-label">Brand</label>
+      <input class="dark-field" id="m-brand" type="text" placeholder="e.g. Google">
+    </div>
+    <div style="margin-bottom:12px">
+      <label class="dark-label">Price (₹)</label>
+      <input class="dark-field" id="m-price" type="number" placeholder="109999">
+    </div>
+    <div style="margin-bottom:16px">
+      <label class="dark-label">Category</label>
+      <select class="dark-field" id="m-cat">
+        <option>iPhone</option>
+        <option>Android</option>
+        <option>Foldable</option>
+        <option>Budget</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="modalAddPhone()">🚀 Add Phone</button>
+  </div>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// ===== DATA STORE =====
+const phones = [
+  { id:1, name:'iPhone 16 Pro Max', brand:'Apple', cat:'iPhone', price:134900, emoji:'📱', ram:'8GB', storage:'256GB', camera:'48MP + 12MP + 12MP', battery:'4422 mAh', rating:4.9, reviews:2840, stock:42, emi:'₹11,242/mo', desc:'The most advanced iPhone ever with A18 Pro chip, titanium design, and ProMotion display.', featured:true },
+  { id:2, name:'Samsung Galaxy S24 Ultra', brand:'Samsung', cat:'Android', price:124999, emoji:'📲', ram:'12GB', storage:'512GB', camera:'200MP + 12MP + 50MP + 10MP', battery:'5000 mAh', rating:4.8, reviews:1920, stock:28, emi:'₹10,417/mo', desc:'200MP camera, integrated S Pen, titanium frame and AI-powered Galaxy experience.', featured:true },
+  { id:3, name:'OnePlus 12 Pro', brand:'OnePlus', cat:'Android', price:64999, emoji:'📳', ram:'16GB', storage:'512GB', camera:'50MP + 64MP + 48MP', battery:'5400 mAh', rating:4.7, reviews:1240, stock:85, emi:'₹5,417/mo', desc:'Hasselblad camera system, 100W SUPERVOOC charging, and Snapdragon 8 Gen 3.', featured:true },
+  { id:4, name:'Google Pixel 9 Pro', brand:'Google', cat:'Android', price:109999, emoji:'🤳', ram:'16GB', storage:'256GB', camera:'50MP + 48MP + 48MP', battery:'4700 mAh', rating:4.8, reviews:980, stock:19, emi:'₹9,167/mo', desc:'The smartest Pixel yet with Google AI, best-in-class computational photography.', featured:true },
+  { id:5, name:'iPhone 15', brand:'Apple', cat:'iPhone', price:69900, emoji:'📱', ram:'6GB', storage:'128GB', camera:'48MP + 12MP', battery:'3877 mAh', rating:4.6, reviews:3100, stock:65, emi:'₹5,825/mo', desc:'Dynamic Island, USB-C, 48MP main camera, and A16 Bionic chip.', featured:false },
+  { id:6, name:'Samsung Z Fold 6', brand:'Samsung', cat:'Foldable', price:164999, emoji:'📲', ram:'12GB', storage:'256GB', camera:'50MP + 10MP + 10MP', battery:'4400 mAh', rating:4.6, reviews:540, stock:12, emi:'₹13,750/mo', desc:'The ultimate foldable phone with a 7.6-inch inner display and Snapdragon 8 Gen 3.', featured:true },
+  { id:7, name:'Realme GT 6', brand:'Realme', cat:'Android', price:34999, emoji:'📳', ram:'8GB', storage:'256GB', camera:'50MP + 8MP + 2MP', battery:'5500 mAh', rating:4.4, reviews:720, stock:130, emi:'₹2,917/mo', desc:'Snapdragon 8s Gen 3, 120W charging, and ultra-smooth 6000-nit display.', featured:false },
+  { id:8, name:'Vivo X100 Pro', brand:'Vivo', cat:'Android', price:89999, emoji:'📱', ram:'16GB', storage:'512GB', camera:'50MP + 64MP + 50MP', battery:'5400 mAh', rating:4.5, reviews:610, stock:33, emi:'₹7,500/mo', desc:'Zeiss optics, 100W FlashCharge, Dimensity 9300 and rich AMOLED display.', featured:false },
+];
+
+let wishlist = [1, 3]; // phone IDs in wishlist
+let cart = [];
+let currentFilter = 'all';
+let currentPhone = null;
+
+// ===== USERS DATA =====
+const users = [
+  { name:'Aryan Mehta', emoji:'👤', phone:'+91 98765 43210', orders:8, status:'Active' },
+  { name:'Priya Shah', emoji:'👩', phone:'+91 91234 56789', orders:3, status:'Active' },
+  { name:'Rahul Gupta', emoji:'👨', phone:'+91 99887 12345', orders:12, status:'Active' },
+  { name:'Sneha Patel', emoji:'👩', phone:'+91 87654 32109', orders:1, status:'Suspended' },
+  { name:'Aditya Kumar', emoji:'👦', phone:'+91 78965 41230', orders:5, status:'Active' },
+  { name:'Meera Joshi', emoji:'👩', phone:'+91 90001 23456', orders:0, status:'Active' },
+  { name:'Vikram Singh', emoji:'👨', phone:'+91 88001 65432', orders:7, status:'Active' },
+  { name:'Kavya Reddy', emoji:'👩', phone:'+91 92345 67890', orders:2, status:'Suspended' },
+];
+
+// ===== RENDER PHONE CARDS =====
+function renderPhones(filter) {
+  const grid = document.getElementById('productsGrid');
+  let filtered = phones;
+  if (filter === 'iphone') filtered = phones.filter(p => p.cat === 'iPhone');
+  else if (filter === 'android') filtered = phones.filter(p => p.cat === 'Android');
+  else if (filter === 'budget') filtered = phones.filter(p => p.price < 40000);
+  else if (filter === '5g') filtered = phones.filter(p => p.price > 20000);
+  else if (filter === 'foldable') filtered = phones.filter(p => p.cat === 'Foldable');
+
+  grid.innerHTML = filtered.map(p => `
+    <div class="phone-card" onclick="viewPhone(${p.id})">
+      <div class="phone-img-wrap">
+        <span class="phone-emoji">${p.emoji}</span>
+        <button class="wishlist-btn ${wishlist.includes(p.id) ? 'active' : ''}"
+          onclick="event.stopPropagation();toggleWishlist(${p.id},this)">
+          ${wishlist.includes(p.id) ? '❤️' : '🤍'}
+        </button>
+      </div>
+      <div class="phone-info">
+        <div class="phone-brand">${p.brand}</div>
+        <div class="phone-name">${p.name}</div>
+        <div class="phone-price">₹${p.price.toLocaleString('en-IN')}</div>
+        <div class="phone-rating">
+          <span class="stars">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</span>
+          ${p.rating} (${p.reviews.toLocaleString()})
+        </div>
+        <button class="view-btn" onclick="event.stopPropagation();viewPhone(${p.id})">View Details</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function applyFilter(f) {
+  document.querySelectorAll('.filter-card').forEach(c => c.classList.remove('active'));
+  const el = document.getElementById('filter-' + f);
+  if (el) el.classList.add('active');
+  currentFilter = f;
+  renderPhones(f);
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  renderPhones(f);
+  showToast('🔍 Showing ' + (f === 'all' ? 'all phones' : f + ' phones'));
+}
+
+// ===== WISHLIST =====
+function toggleWishlist(id, btn) {
+  if (wishlist.includes(id)) {
+    wishlist = wishlist.filter(i => i !== id);
+    btn.textContent = '🤍';
+    btn.classList.remove('active');
+    showToast('Removed from Wishlist');
+  } else {
+    wishlist.push(id);
+    btn.textContent = '❤️';
+    btn.classList.add('active');
+    showToast('Added to Wishlist ❤️');
+  }
+  renderWishlist();
+}
+
+function renderWishlist() {
+  const grid = document.getElementById('wishlistGrid');
+  const wPhones = phones.filter(p => wishlist.includes(p.id));
+  if (wPhones.length === 0) {
+    grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;font-size:14px">No items in wishlist yet 🤍</p>';
+    return;
+  }
+  grid.innerHTML = wPhones.map(p => `
+    <div class="phone-card" onclick="viewPhone(${p.id})">
+      <div class="phone-img-wrap">
+        <span class="phone-emoji">${p.emoji}</span>
+        <button class="wishlist-btn active" onclick="event.stopPropagation();toggleWishlist(${p.id},this)">❤️</button>
+      </div>
+      <div class="phone-info">
+        <div class="phone-brand">${p.brand}</div>
+        <div class="phone-name">${p.name}</div>
+        <div class="phone-price">₹${p.price.toLocaleString('en-IN')}</div>
+        <div class="phone-rating">
+          <span class="stars">${'★'.repeat(Math.floor(p.rating))}</span>
+          ${p.rating}
+        </div>
+        <button class="view-btn" onclick="event.stopPropagation();viewPhone(${p.id})">View Details</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== PHONE DETAIL =====
+function viewPhone(id) {
+  currentPhone = phones.find(p => p.id === id);
+  const p = currentPhone;
+  const inWish = wishlist.includes(p.id);
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-hero">
+      <span class="detail-emoji">${p.emoji}</span>
+    </div>
+    <div class="detail-body">
+      <div class="brand-badge">${p.brand}</div>
+      <div class="detail-name">${p.name}</div>
+      <div class="detail-price">₹${p.price.toLocaleString('en-IN')}</div>
+      <div class="emi-text">💳 EMI from ${p.emi} · 0% Interest available</div>
+      <div class="stock-tag">
+        <span style="width:8px;height:8px;background:var(--success);border-radius:50%;display:inline-block"></span>
+        In Stock · ${p.stock} units left
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:16px">${p.desc}</p>
+
+      <!-- Accordion: Specs -->
+      <div class="accordion">
+        <div class="accordion-head" onclick="toggleAccordion(this)">
+          📋 Specifications <span>+</span>
+        </div>
+        <div class="accordion-body">
+          <div class="spec-row"><span class="spec-key">RAM</span><span class="spec-val">${p.ram}</span></div>
+          <div class="spec-row"><span class="spec-key">Storage</span><span class="spec-val">${p.storage}</span></div>
+          <div class="spec-row"><span class="spec-key">Camera</span><span class="spec-val">${p.camera}</span></div>
+          <div class="spec-row"><span class="spec-key">Battery</span><span class="spec-val">${p.battery}</span></div>
+          <div class="spec-row"><span class="spec-key">Category</span><span class="spec-val">${p.cat}</span></div>
+          <div class="spec-row"><span class="spec-key">Rating</span><span class="spec-val">⭐ ${p.rating}/5</span></div>
+        </div>
+      </div>
+
+      <!-- Accordion: Reviews -->
+      <div class="accordion">
+        <div class="accordion-head" onclick="toggleAccordion(this)">
+          ⭐ Reviews (${p.reviews.toLocaleString()}) <span>+</span>
+        </div>
+        <div class="accordion-body">
+          <div class="review-card">
+            <div class="reviewer">Rahul G. ⭐⭐⭐⭐⭐</div>
+            <div class="review-text">Absolutely stunning device! Camera quality is exceptional and battery lasts all day.</div>
+          </div>
+          <div class="review-card">
+            <div class="reviewer">Priya S. ⭐⭐⭐⭐</div>
+            <div class="review-text">Great performance, smooth display. A bit pricey but worth every rupee.</div>
+          </div>
+          <div class="review-card">
+            <div class="reviewer">Arjun M. ⭐⭐⭐⭐⭐</div>
+            <div class="review-text">Best phone I've ever owned. The build quality is premium and the display is gorgeous.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion: Offers -->
+      <div class="accordion">
+        <div class="accordion-head" onclick="toggleAccordion(this)">
+          🎁 Offers &amp; Discounts <span>+</span>
+        </div>
+        <div class="accordion-body">
+          <div class="spec-row"><span class="spec-key">Bank Offer</span><span class="spec-val">₹5,000 off on HDFC Cards</span></div>
+          <div class="spec-row"><span class="spec-key">Exchange</span><span class="spec-val">Up to ₹18,000 on exchange</span></div>
+          <div class="spec-row"><span class="spec-key">EMI</span><span class="spec-val">0% EMI on 6/9/12 months</span></div>
+          <div class="spec-row"><span class="spec-key">Warranty</span><span class="spec-val">1 Year Manufacturer Warranty</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn-primary" onclick="addToCart()">🛒 Add to Cart</button>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="showToast('🔔 Price Alert set!')">🔔 Price Alert</button>
+        <button class="btn-secondary" onclick="showToast('🆚 Added to Compare!')">🆚 Compare</button>
+      </div>
+    </div>
+  `;
+
+  showScreen('detail');
+}
+
+function toggleAccordion(head) {
+  const body = head.nextElementSibling;
+  const arrow = head.querySelector('span');
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.accordion-body.open').forEach(b => {
+    b.classList.remove('open');
+    b.previousElementSibling.querySelector('span').textContent = '+';
+  });
+  if (!isOpen) {
+    body.classList.add('open');
+    arrow.textContent = '−';
+  }
+}
+
+// ===== CART =====
+function addToCart() {
+  if (currentPhone) {
+    cart.push(currentPhone.id);
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = cart.length + 3;
+    showToast(`🛒 ${currentPhone.name} added to cart!`);
+  }
+}
+
+// ===== NAVIGATION =====
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const sc = document.getElementById('screen-' + name);
+  if (sc) sc.classList.add('active');
+  document.getElementById('mobileApp').style.display = 'block';
+  document.getElementById('screen-admin-login').style.display = 'none';
+  document.getElementById('screen-admin-dash').style.display = 'none';
+  document.querySelector('.admin-entry-link').style.display = 'block';
+}
+
+function goBack(to) {
+  showScreen(to);
+  renderPhones(currentFilter);
+}
+
+function goProfile() {
+  renderWishlist();
+  showScreen('profile');
+}
+
+function switchNav(idx) {
+  const labels = ['home', 'categories', 'cart', 'profile'];
+  const actions = [
+    () => showScreen('home'),
+    () => { showScreen('home'); showToast('📂 Categories coming soon!'); },
+    () => { showScreen('home'); showToast('🛒 Cart: ' + (cart.length + 3) + ' items'); },
+    () => goProfile()
+  ];
+  actions[idx]();
+}
+
+// ===== TABS =====
+function switchTab(btn, panelId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const panel = document.getElementById(panelId);
+  if (panel) panel.classList.add('active');
+}
+
+// ===== SMS =====
+function sendSMS() {
+  const rec = document.getElementById('sms-recipient').value.trim();
+  const msg = document.getElementById('sms-msg').value.trim();
+  if (!rec || !msg) { showToast('⚠️ Please fill all fields'); return; }
+  showToast('✅ SMS Sent to ' + rec + '!');
+  document.getElementById('sms-msg').value = '';
+}
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ===== ADMIN =====
+function showAdminLogin() {
+  document.getElementById('mobileApp').style.display = 'none';
+  document.getElementById('screen-admin-login').style.display = 'flex';
+  document.getElementById('screen-admin-dash').style.display = 'none';
+  document.querySelector('.admin-entry-link').style.display = 'none';
+}
+
+function goAdminDash() {
+  const email = document.getElementById('admin-email').value.trim();
+  const pass  = document.getElementById('admin-pass').value.trim();
+  if (!email || !pass) { showToast('⚠️ Enter credentials'); return; }
+  document.getElementById('screen-admin-login').style.display = 'none';
+  document.getElementById('screen-admin-dash').style.display = 'flex';
+  document.querySelector('.admin-entry-link').style.display = 'none';
+  renderAdminTables();
+  buildRevenueChart();
+  showToast('✅ Welcome, Admin!');
+}
+
+function showMobile() {
+  document.getElementById('mobileApp').style.display = 'block';
+  document.getElementById('screen-admin-login').style.display = 'none';
+  document.getElementById('screen-admin-dash').style.display = 'none';
+  document.querySelector('.admin-entry-link').style.display = 'block';
+}
+
+function adminPage(page, el) {
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  const ap = document.getElementById('admin-' + page);
+  if (ap) ap.classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ===== ADMIN TABLES =====
+function renderAdminTables() {
+  // Dash Table
+  const dashTbody = document.getElementById('dashTable');
+  dashTbody.innerHTML = phones.slice(0,6).map(p => `
+    <tr>
+      <td>${p.emoji} ${p.name}</td>
+      <td>${p.cat}</td>
+      <td>₹${p.price.toLocaleString('en-IN')}</td>
+      <td><span class="stock-tag-sm ${p.stock > 20 ? 'stock-ok' : 'stock-low'}">${p.stock > 20 ? '✓ In Stock' : '⚠ Low Stock'}</span></td>
+      <td><div class="td-actions">
+        <button class="act-btn act-edit" onclick="showToast('✏️ Editing ${p.name}')">Edit</button>
+        <button class="act-btn act-del" onclick="showToast('🗑️ Deleted!')">Del</button>
+      </div></td>
+    </tr>
+  `).join('');
+
+  // Phones Table
+  const phoneTbody = document.getElementById('phonesTable');
+  phoneTbody.innerHTML = phones.map(p => `
+    <tr>
+      <td>${p.emoji} ${p.name}</td>
+      <td>${p.cat}</td>
+      <td>₹${p.price.toLocaleString('en-IN')}</td>
+      <td><span class="stock-tag-sm ${p.stock > 20 ? 'stock-ok' : 'stock-low'}">${p.stock > 20 ? '✓ ' + p.stock : '⚠ ' + p.stock}</span></td>
+      <td><div class="td-actions">
+        <button class="act-btn act-edit" onclick="showToast('✏️ Editing!')">Edit</button>
+        <button class="act-btn act-del" onclick="deletePhone(${p.id}, this)">Del</button>
+      </div></td>
+    </tr>
+  `).join('');
+
+  // Users Table
+  const usersTbody = document.getElementById('usersTable');
+  usersTbody.innerHTML = users.map(u => `
+    <tr>
+      <td><span class="user-row-img">${u.emoji}</span>${u.name}</td>
+      <td>${u.phone}</td>
+      <td>${u.orders}</td>
+      <td class="${u.status === 'Active' ? 'status-active' : 'status-suspended'}">${u.status}</td>
+      <td><div class="td-actions">
+        <button class="act-btn act-edit" onclick="showToast('👤 Managing ${u.name}')">View</button>
+        <button class="act-btn act-del" onclick="showToast('🚫 ${u.name} suspended!')">Ban</button>
+      </div></td>
+    </tr>
+  `).join('');
+
+  document.getElementById('phonesCount').textContent = phones.length + ' listings';
+}
+
+function deletePhone(id, btn) {
+  const idx = phones.findIndex(p => p.id === id);
+  if (idx !== -1) {
+    const name = phones[idx].name;
+    phones.splice(idx, 1);
+    renderAdminTables();
+    renderPhones(currentFilter);
+    document.getElementById('kpi-phones').textContent = phones.length + 142;
+    showToast('🗑️ ' + name + ' deleted!');
+  }
+}
+
+function adminPublishPhone() {
+  const name  = document.getElementById('af-name').value.trim();
+  const brand = document.getElementById('af-brand').value.trim();
+  const price = parseInt(document.getElementById('af-price').value) || 0;
+  const cat   = document.getElementById('af-cat').value;
+  const ram   = document.getElementById('af-ram').value || '8GB';
+  const storage = document.getElementById('af-storage').value || '128GB';
+  const cam   = document.getElementById('af-cam').value || '48MP';
+  const bat   = document.getElementById('af-bat').value || '4000 mAh';
+  const stock = parseInt(document.getElementById('af-stock').value) || 50;
+  const desc  = document.getElementById('af-desc').value || 'A great smartphone.';
+
+  if (!name || !brand || !price) { showToast('⚠️ Fill Name, Brand & Price'); return; }
+
+  const newPhone = {
+    id: Date.now(), name, brand, cat, price,
+    emoji: cat === 'iPhone' ? '📱' : cat === 'Foldable' ? '📲' : '📳',
+    ram, storage, camera: cam, battery: bat,
+    rating: 4.5, reviews: 0, stock,
+    emi: '₹' + Math.round(price/12).toLocaleString('en-IN') + '/mo',
+    desc, featured: document.getElementById('af-featured').checked
+  };
+  phones.unshift(newPhone);
+  renderAdminTables();
+  renderPhones(currentFilter);
+  showToast('🚀 ' + name + ' published!');
+  // Clear form
+  ['af-name','af-brand','af-price','af-ram','af-storage','af-cam','af-bat','af-stock','af-desc'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+// ===== MODAL =====
+function openModal() {
+  document.getElementById('addPhoneModal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('addPhoneModal').classList.remove('open');
+}
+function modalAddPhone() {
+  const name  = document.getElementById('m-name').value.trim();
+  const brand = document.getElementById('m-brand').value.trim();
+  const price = parseInt(document.getElementById('m-price').value) || 0;
+  const cat   = document.getElementById('m-cat').value;
+  if (!name || !brand || !price) { showToast('⚠️ Fill all fields'); return; }
+  const newPhone = {
+    id: Date.now(), name, brand, cat, price,
+    emoji: cat === 'iPhone' ? '📱' : cat === 'Foldable' ? '📲' : '📳',
+    ram:'8GB', storage:'128GB', camera:'48MP', battery:'4000 mAh',
+    rating: 4.5, reviews: 0, stock: 50,
+    emi: '₹' + Math.round(price/12).toLocaleString('en-IN') + '/mo',
+    desc: 'A new smartphone listing.', featured: false
+  };
+  phones.unshift(newPhone);
+  renderAdminTables();
+  renderPhones(currentFilter);
+  closeModal();
+  showToast('✅ ' + name + ' added!');
+}
+
+// Close modal on overlay click
+document.getElementById('addPhoneModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ===== SMS TYPE SELECTOR =====
+function selectSmsType(btn) {
+  document.querySelectorAll('.sms-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ===== SETTINGS TOGGLE =====
+function toggleSetting(btn) {
+  btn.classList.toggle('on');
+  showToast(btn.classList.contains('on') ? '✅ Enabled' : '⛔ Disabled');
+}
+
+// ===== REVENUE CHART =====
+function buildRevenueChart() {
+  const days  = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const vals  = [28, 42, 35, 56, 48, 72, 65];
+  const max   = Math.max(...vals);
+  const chart = document.getElementById('revenueChart');
+  const labels= document.getElementById('revenueLabels');
+  if (!chart) return;
+  chart.innerHTML = vals.map(v => `
+    <div class="rev-bar" style="height:${(v/max)*100}%" title="₹${v}L"></div>
+  `).join('');
+  labels.innerHTML = days.map(d => `<div class="rev-label">${d}</div>`).join('');
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  renderPhones('all');
+  renderWishlist();
+});
+</script>
+</body>
+</html>
