@@ -798,7 +798,9 @@
     background: #1A1D26;
     border-radius: var(--radius);
     border: 1px solid rgba(255,255,255,0.06);
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 24px;
   }
   .table-header {
@@ -1189,11 +1191,11 @@
   .admin-entry-link:hover { color: white; border-color: rgba(0,102,255,0.4); background: rgba(0,102,255,0.1); }
 
   /* ===== RESPONSIVE ===== */
-  @media(min-width: 768px) {
+  @media(min-width: 769px) {
     .admin-sidebar { width: 240px; }
     .kpi-grid { grid-template-columns: repeat(5,1fr); }
   }
-  @media(max-width: 600px) {
+  @media(max-width: 768px) {
     .admin-layout { flex-direction: column; }
     .admin-sidebar {
       width: 100%;
@@ -1216,10 +1218,14 @@
     .sidebar-logo, .sidebar-logout { display: none; }
     .admin-main { padding: 16px; }
     .form-grid { grid-template-columns: 1fr; }
-    .kpi-grid { grid-template-columns: 1fr 1fr; }
-    .sms-types { grid-template-columns: repeat(3,1fr); }
+    .kpi-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .sms-types { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
     table { font-size: 11px; }
     th, td { padding: 8px 10px; }
+    td { white-space: nowrap; }
+  }
+  @media(max-width: 340px) {
+    .products-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
