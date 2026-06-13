@@ -1191,10 +1191,14 @@
   .admin-entry-link:hover { color: white; border-color: rgba(0,102,255,0.4); background: rgba(0,102,255,0.1); }
 
   /* ===== RESPONSIVE ===== */
+
+  /* ---- Desktop: admin sidebar expands ---- */
   @media(min-width: 769px) {
     .admin-sidebar { width: 240px; }
     .kpi-grid { grid-template-columns: repeat(5,1fr); }
   }
+
+  /* ---- Tablet & Mobile (≤768px): admin goes stacked ---- */
   @media(max-width: 768px) {
     .admin-layout { flex-direction: column; }
     .admin-sidebar {
@@ -1204,6 +1208,7 @@
       flex-direction: row;
       padding: 0;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .nav-group { display: flex; flex-direction: row; }
     .sidebar-item {
@@ -1213,19 +1218,84 @@
       border-left: none;
       border-bottom: 3px solid transparent;
       font-size: 10px;
+      white-space: nowrap;
     }
     .sidebar-item.active { border-left-color: transparent; border-bottom-color: var(--blue-primary); }
     .sidebar-logo, .sidebar-logout { display: none; }
-    .admin-main { padding: 16px; }
+    .admin-main { padding: 14px; }
     .form-grid { grid-template-columns: 1fr; }
     .kpi-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
     .sms-types { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
     table { font-size: 11px; }
     th, td { padding: 8px 10px; }
     td { white-space: nowrap; }
+    .page-heading { font-size: 18px; }
+    .donut-wrap { flex-direction: column; align-items: flex-start; gap: 14px; }
   }
-  @media(max-width: 340px) {
+
+  /* ---- Phone-specific (≤480px) ---- */
+  @media(max-width: 480px) {
+    /* Hero section */
+    .hero { margin: 12px; padding: 22px 18px 16px; }
+    .hero h1 { font-size: 20px; }
+    .hero p { font-size: 12px; }
+    .hero-btn { font-size: 13px; padding: 10px 16px; }
+
+    /* Filter cards: 2-per-row or auto */
+    .filter-card {
+      flex: 0 0 calc(50% - 8px);
+      min-width: 130px;
+      padding: 14px 12px;
+    }
+
+    /* Phone product grid: keep 2 cols, reduce padding */
+    .products-grid { gap: 10px; padding: 0 12px; }
+    .phone-img-wrap { height: 130px; }
+    .phone-emoji { font-size: 60px; }
+    .phone-info { padding: 10px; }
+    .phone-price { font-size: 13px; }
+    .view-btn { font-size: 11px; padding: 7px; }
+
+    /* Header */
+    .logo-text { font-size: 16px; }
+    .app-header { padding: 12px 14px; }
+    .icon-btn { width: 34px; height: 34px; font-size: 16px; }
+
+    /* Detail screen */
+    .detail-hero { height: 180px; }
+    .detail-emoji { font-size: 100px; }
+    .detail-name { font-size: 18px; }
+    .detail-price { font-size: 22px; }
+
+    /* Action buttons */
+    .action-buttons { padding: 12px; gap: 8px; }
+    .btn-primary { padding: 14px; font-size: 14px; }
+    .btn-secondary { padding: 11px; font-size: 12px; }
+
+    /* Profile */
+    .avatar { width: 58px; height: 58px; font-size: 24px; }
+    .profile-name { font-size: 16px; }
+    .tab-btn { padding: 11px 12px; font-size: 12px; }
+
+    /* Admin login */
+    .login-card { padding: 24px 20px; }
+    .login-title { font-size: 18px; }
+    .admin-entry-link { bottom: 10px; right: 10px; padding: 6px 12px; font-size: 10px; }
+
+    /* Section headers */
+    .section-title { font-size: 15px; }
+
+    /* Bottom nav */
+    .nav-item { padding: 8px 0 6px; }
+    .nav-label { font-size: 9px; }
+    .nav-item svg { width: 20px; height: 20px; }
+  }
+
+  /* ---- Very small phones (≤360px) ---- */
+  @media(max-width: 360px) {
     .products-grid { grid-template-columns: 1fr; }
+    .filter-card { min-width: 110px; }
+    .hero h1 { font-size: 18px; }
   }
 </style>
 </head>
